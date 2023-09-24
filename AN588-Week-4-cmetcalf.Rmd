@@ -1,0 +1,631 @@
+---
+title: "AN588-Week-4-cmetcalf"
+author: "Cat Metcalf"
+date: "2023-09-24"
+output: html_document
+---
+
+# Module 8
+***
+Probability applied to population level
+  -properties of distributions
+  -vary between zero and one
+  -pr=0 possible, pr=1 certain
+  
+```{r}
+library(manipulate)
+outcomes <- c(1, 2, 3, 4, 5, 6)
+manipulate(hist(sample(outcomes, n, replace = TRUE), breaks = c(0.5, 1.5, 2.5,
+    3.5, 4.5, 5.5, 6.5), probability = TRUE, main = paste("Histogram of Outcomes of ",
+    n, " Die Rolls", sep = ""), xlab = "roll", ylab = "probability"), n = slider(0,
+    10000, initial = 100, step = 100))
+```
+***
+
+## Challenge 1
+
+Write a function to simulate rolling a die where you pass the number of rolls as an argument. Then, use your function to simulate rolling two dice 1000 times and take the sum of the rolls. Plot a histogram of those results.
+
+```{r}
+nrolls <- 1000 #indicates amount of rolls
+roll <- function(x) {
+    sample(1:6, x, replace = TRUE)
+}
+two_dice <- roll(nrolls) + roll(nrolls) #indicates 1000 rolls per two dice
+hist(two_dice, breaks = c(1.5:12.5), probability = TRUE, main = "Rolling Two Dice",
+    xlab = "sum of rolls", ylab = "probability")
+```
+
+**Rules of Probability**
+Pr (+) = Probability that something occurs = 1
+
+Pr (∅) = Probability that nothing occurs = 0
+
+Pr (A) = Probability that a particular event A occurs
+
+0 ≤ Pr (A) ≤ 1
+
+Pr (A ⋃ B) = Probability that a particular event A or a particular event B occurs = UNION
+
+Pr (A ⋃ B) = Pr (A) + Pr (B) - Pr (A ⋂ B)
+
+If event A and B are mutually exclusive, then this simplifies to Pr (A) + Pr (B)
+
+Pr (A ⋂ B) = Probability that both A and B occur simultaneously = INTERSECTION
+
+Pr (A ⋂ B) = Pr (A | B) × Pr (B) = Pr (B | A) × Pr (A)
+
+where the pipe operator ( | ) can be read as “given”.
+
+If the 2 events are independent (i.e., if the probability of one does not depend on the probability of the other), then Pr (A ⋂ B) simplifies to…
+
+Pr (A) × Pr (B)
+
+If Pr (A ⋂ B) = 0, then we say the events are mutually exclusive (e.g., you cannot have a die roll be 1 and 2)
+
+Pr (Ā) = Probability of the complement of A (i.e., not A) = 1 - Pr (A)
+
+Conditional Probability is the probability of an event occuring after taking into account the occurrence of another event, i.e., one event is conditioned on the occurrence of a different event.
+
+For example, the probability of a die coming up as a “1” given that we know the die came up as an odd number (“1”, “3”, or “5”).
+
+Pr (A | B) = Pr (A ⋂ B) ÷ Pr (B)
+
+If event A and event B are independent, then Pr (A | B) = [ Pr (A) × Pr (B) ] ÷ Pr (B) = Pr (A)
+
+If event A and B are dependent, then Pr (A | B) ≠ Pr (A)
+
+## Challenge 2
+You have a deck of 52 cards, Ace to 10 + 3 face cards in each suit. You draw a card at random.
+
+What is the probability that you draw a face card? 3*4=12, 12/52
+
+What is the probability that you draw a King? 4/52
+
+What is the probability that you draw a spade? 13/52
+
+What is the probability that you draw a spade given that you draw a face card? (13/52 | 12/52) * 12/52= (12/52 | 13/52) * 13/52
+
+What is the probability that you draw a King given that you draw a face card?
+
+What is the probability that you draw a card that is both from a red suit (hearts or diamonds) and a face card?
+
+Pr (A) = red suit = 26/52 = 1/2
+
+Pr (B) = face card = 12/52 =
+
+Pr (A | B) = red suit given face card = 6/12
+
+Pr (A ⋂ B) = Pr (A | B) × Pr (B) = 6/12 × 12/52 = 6/52 = 0.1153846
+
+What is the probability that you draw a card that is either a club or not a face card?
+
+Pr (A) = club = 13/52 = 13/52
+
+Pr (B) = not a face card = 40/52
+
+Pr (A ⋂ B) = club and not a face card = 10/52
+
+Pr (A ⋃ B) = Pr (A) + Pr (B) - Pr (A ⋂ B) = 13/52 + 40/52 - 10/52 = 43/52
+
+**Random Variables**
+Discrete Random Variables are random variables that can assume only a countable number of discrete possibilities (e.g., counts of outcomes in a particular category). We can assign a probability to each possible outcome.
+
+Continuous Random Variables are random variables that can assume any real number value within a given range (e.g., measurements). We cannot assign a specific probability to each possible outcome value as the set of possible outcomes is infinite, but we can assign probabilites to intervals of outcome values.
+
+```{r}
+outcomes <- c("heads", "tails")
+prob <- c(1/2, 1/2)
+barplot(prob, ylim = c(0, 0.6), names.arg = outcomes, space = 0.1, xlab = "outcome",
+    ylab = "Pr(X = outcome)", main = "Probability Mass Function")
+```
+Cumulative Probability:
+```{r}
+cumprob <- cumsum(prob)
+barplot(cumprob, names.arg = outcomes, space = 0.1, xlab = "outcome", ylab = "Cumulative Pr(X)",
+    main = "Cumulative Probability")
+```
+
+Across six sides of die:
+```{r}
+outcomes <- c(1, 2, 3, 4, 5, 6)
+prob <- c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6)
+barplot(prob, ylim = c(0, 0.5), names.arg = outcomes, space = 0.1, xlab = "outcome",
+    ylab = "Pr(X = outcome)", main = "Probability Mass Function")
+```
+
+```{r}
+cumprob <- cumsum(prob)
+barplot(cumprob, names.arg = outcomes, space = 0.1, xlab = "outcome", ylab = "Cumulative Pr(X)",
+    main = "Cumulative Probability")
+```
+
+To be a valid PDF, a function f(x) must satisfy the following:
+
+f(x) ≥ 0 for all −∞ ≤ x ≤ +∞. That is, the function f(x) is non-negative everywhere.
+∫+∞−∞ f(x) dx = 1. That is, the total area under the function f(x) = 1
+
+Beta Distribution refers to a family of continuous probability distributions defined over the interval [0, 1] and parametrized by two positive shape parameters, denoted by α and β, that appear as exponents of the random variable x and control the shape of the distribution.
+
+f(x) = K x^α−1(1−x)^β−1
+
+```{r}
+library(ggplot2)
+a <- 2
+b <- 1
+K <- 2
+x <- seq(from = 0, to = 1, by = 0.025)
+fx <- K * x^(a - 1) * (1 - x)^(b - 1)
+lower_x <- seq(from = -0.25, to = 0, by = 0.025)  # add some values of x less than zero
+upper_x <- seq(from = 1, to = 1.25, by = 0.025)  # add some values of x greater than one
+lower_fx <- rep(0, 11)  # add fx=0 values to x<0
+upper_fx <- rep(0, 11)  # add fx=0 values to x>1
+x <- c(lower_x, x, upper_x)  # paste xs together
+fx <- c(lower_fx, fx, upper_fx)  # paste fxs together
+d <- as.data.frame(cbind(x, fx))
+p <- ggplot(data = d, aes(x = x, y = fx)) + xlab("x") + ylab("f(x)") + geom_line()
+p
+```
+
+Show agreement:
+```{r}
+library(manipulate)
+manipulate(ggplot(data = d, aes(x = x, y = fx)) + xlab("x") + ylab("f(x)") +
+    geom_line() + geom_polygon(data = data.frame(xvals = c(0, n, n, 0), fxvals = c(0,
+    K * n^(a - 1) * (1 - n)^(b - 1), 0, 0)), aes(x = xvals, y = fxvals)) + ggtitle(paste("Area Under Function = ",
+    0.5 * n * K * n^(a - 1) * (1 - n)^(b - 1), sep = " ")), n = slider(0, 1,
+    initial = 0.5, step = 0.01))
+```
+*shaded area represents cumulative probability*
+
+**cumulative distribution function**, or CDF, of a random variable is defined as the probability of observing a random variable X taking the value of x or less, i.e., F(x) = Pr (X ≤ x).
+```{r}
+x <- seq(from = 0, to = 1, by = 0.005)
+prob <- 0.5 * x * K * x^(a - 1) * (1 - x)^(b - 1)
+barplot(prob, names.arg = x, space = 0, main = "Cumulative Probability", xlab = "x",
+    ylab = "Pr(X ≤ x)")
+```
+Specify values and run beta distributuon:
+```{r}
+pbeta(0.75, 2, 1)
+```
+
+```{r}
+pbeta(0.5, 2, 1)
+```
+
+```{r}
+pbeta(0.7, 2, 1)
+```
+
+```{r}
+qbeta(0.49, 2, 1)
+```
+
+**survival function** for a random variable X as S(x) = Pr (X > x) = 1 - Pr (X ≤ x) = 1 - f(x)
+
+μX = Expectation for X = ∑ xi × Pr (X=xi) for all x from xi to xk
+σ2X  = Variance of X = ∑ (xi−μX)2 × Pr (X=xi) for all x from xi to xk
+
+Large sum of die rolls:
+(1 * 1/6) + (2 * 1/6) + … + (6 * 1/6) = 3.5
+```{r}
+m <- sum(seq(1:6) * 1/6)
+m
+```
+
+expected variance…
+
+[(1 - 3.5)^2 * (1/6)] + [(2 - 3.5)^2 * (1/6)] + … + [(6 - 3.5)^2 * (1/6)] =
+```{r}
+var <- sum((seq(1:6) - mean(seq(1:6)))^2 * (1/6))
+var
+```
+
+**Bernoulli Distribution** is the probability distribution of a binary random variable, i.e., a variable that has only two possible outcomes, such as success or failure, heads or tails, true or false. If p is the probability of one outcome, then 1−p has to be the probabilty of the alternative. For flipping a fair coin, for example, p = 0.5 and 1−p also = 0.5.
+
+f(x) = px(1−p)1−x where x = {0 or 1}
+
+For this distribution, μX = p and σ2X = p(1−p)
+
+## Challenge 3
+
+Using the Bernoulli distribution, calculate the expectation for drawing a spade from a deck of cards? What is the variance in this expectation across a large number of draws?
+
+Pr (spade) = (13/52)1 × (39/52)0 = 0.25
+
+Var (spade) = (13/52) × (1−13/52) = (0.25) × (0.75) = 0.1875
+
+For the BINOMIAL DISTRIBUTION, the probability mass function is:
+
+f(x)= (^n over k) p^k (1-p)^(n-k)
+
+where x = {0, 1, 2, … , n} and where
+
+(^n over k)=(n!)/(k!(n-k)!)
+
+This is read as “n choose k”, i.e., the probability of k successes out of n trials. This is also called the “binomial coefficient”.
+
+For this distribution, μX = np and σ2X = np(1-p). Recall, μX = expected number of successes in n trials
+
+Where n = 1, this simplifies to the Bernoulli distribution.
+
+## Challenge 4
+What is the chance of getting a “1” on each of six consecutive rolls of a die? What about of getting exactly three “1”s? What is the expected number of “1”s to occur in six consecutive rolls?
+```{r}
+n <- 6  # number of trials
+k <- 6  # number of successes
+p <- 1/6
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n -
+    k)
+prob
+```
+```{r}
+k <- 3  # number of successes
+prob <- (factorial(n)/(factorial(k) * factorial(n - k))) * (p^k) * (1 - p)^(n -
+    k)
+prob
+```
+
+```{r}
+dbinom(x = k, size = n, prob = p) #density function also solves for probability of given outcome
+```
+
+outputs cumulative distribution function: (observing up to and including given number of successes in n trials)
+```{r}
+probset <- dbinom(x = 0:6, size = 6, prob = 1/6)  # x is number of successes, size is number of trials
+barplot(probset, names.arg = 0:6, space = 0, xlab = "outcome", ylab = "Pr(X = outcome)",
+    main = "Probability Mass Function")
+```
+
+```{r}
+cumprob = cumsum(probset)
+barplot(cumprob, names.arg = 0:6, space = 0.1, xlab = "outcome", ylab = "Cumulative Pr(X)",
+    main = "Cumulative Probability")
+```
+
+```{r}
+sum(probset)
+```
+Observing exactly 3 rolls of "1":
+```{r}
+dbinom(x = 3, size = 6, prob = 1/6)
+```
+Up to and including 3 rolls of "1":
+```{r}
+pbinom(q = 3, size = 6, prob = 1/6)  # note the name of the argument is q not x
+```
+OR
+```{r}
+sum(dbinom(x = 0:3, size = 6, prob = 1/6))  # this sums the probabilities of 0, 1, 2, and 3 successes
+```
+Observing more than 3 rolls of "1":
+```{r}
+1 - pnbinom(q = 3, size = 6, prob = 1/6)
+```
+OR
+```{r}
+pnbinom(q = 3, size = 6, prob = 1/6, lower.tail = FALSE)
+```
+Observing 3 or more rolls of "1":
+```{r}
+1 - pbinom(q = 2, size = 6, prob = 1/6)  # note here that the q argument is '2'
+```
+OR
+```{r}
+pbinom(q = 2, size = 6, prob = 1/6, lower.tail = FALSE)
+```
+
+**Poisson Distribution** is often used to model open ended counts of independently occuring events, for example the number of cars that pass a traffic intersection over a given interval of time or the number of times a monkey scratches itself during a given observation interval. The probability mass function for the Poisson distribution is described by a single parameter, λ, where λ can be interpreted as the mean number of occurrences of the event in the given interval.
+
+The probability mass function for the POISSON DISTRIBUTION is:
+
+f(x)= (λ^x exp(-λ))/(x!)
+
+where x = {0, 1, 2, …}
+
+For this distribution, μX = λ and σ2X = λ
+
+Note that the mean and the variance are the same!
+
+Probability mass functions for different values of lambda:
+```{r}
+x <- 0:10
+l = 3.5
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+```
+
+```{r}
+x <- 0:20
+l = 10
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+```
+
+```{r}
+x <- 0:50
+l = 20
+probset <- dpois(x = x, lambda = l)
+barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
+```
+Cumulative Distribution Function:
+```{r}
+x <- 0:10
+l <- 3.5
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+```{r}
+x <- 0:20
+l <- 10
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+```{r}
+x <- 0:50
+l <- 20
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x",
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+**Uniform Distribution** is the simplest probability density function describing a continuous random variable. The probability is uniform and does not fluctuate across the range of x values in a given interval.
+
+The probability density function for the UNIFORM DISTRIBUTION is:
+
+f(x)= 1/(b-a)
+
+where a ≤ x ≤ b and 0 for x < a and x > b
+
+## Challenge 5
+What would you predict the expectation (mean) should be for a uniform distribution?
+
+(mean)uX=(a+b)/2
+(sigma)^2X=(b-a)^2/12
+
+Let’s plot a uniform distribution across a given range, from a = 4 to b = 8…
+```{r}
+a <- 4
+b <- 8
+x <- seq(from = a - (b - a), to = b + (b - a), by = 0.01)
+fx <- dunif(x, min = a, max = b)  # dunif() evaluates the density at each x
+plot(x, fx, type = "l", xlab = "x", ylab = "f(x)", main = "Probability Density Function")
+```
+
+```{r}
+plot(x, punif(q = x, min = a, max = b), type = "l", xlab = "x", ylab = "Pr(X ≤ x)",
+    main = "Cumulative Probability")  # punif() is the cumulative probability density up to a given x
+```
+
+## Challenge 6
+Simulate a sample of 10000 random numbers from a uniform distribution in the interval between a = 6 and b = 8. Calculate the mean and variance of this simulated sample and compare it to the expectation for these parameters.
+
+**Normal or Gaussian Distribution** is perhaps the most familiar and most commonly applied probability density functions for modeling continuous random variables. Why is the normal so important? Many traits are normally distributed, and the additive combination of many random factors is also commonly normally distributed.
+
+Two parameters, μ and σ, are used to describe a normal distribution.
+
+We can get an idea of the shape of a normal distribution with different μ and σ using the simple R code below. Try playing with μ and σ.
+```{r}
+mu <- 4
+sigma <- 1.5
+curve(dnorm(x, mu, sigma), mu - 4 * sigma, mu + 4 * sigma, main = "Normal Curve",
+    xlab = "x", ylab = "f(x)")
+```
+
+The code below lets you play interactively with μ, σ, and nsigma (which shades in the proportion of the distribution falling within that number of standard deviations of the mean). Also, look carefully at the code to try to figure out what each bit is doing.
+```{r}
+manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
+    dnorm(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
+        mean = mu, sd = sigma), type = "l", xlim = c(mu - 4 * sigma, mu + 4 *
+        sigma), xlab = "x", ylab = "f(x)", main = "Normal Probability Density Function") +
+    polygon(rbind(c(mu - nsigma * sigma, 0), cbind(seq(from = (mu - nsigma *
+        sigma), to = (mu + nsigma * sigma), length.out = 1000), dnorm(seq(from = (mu -
+        nsigma * sigma), to = (mu + nsigma * sigma), length.out = 1000), mean = mu,
+        sd = sigma)), c(mu + nsigma * sigma, 0)), border = NA, col = "salmon") +
+    abline(v = mu, col = "blue") + abline(h = 0) + abline(v = c(mu - nsigma *
+    sigma, mu + nsigma * sigma), col = "salmon"), mu = slider(-10, 10, initial = 0,
+    step = 0.25), sigma = slider(0.25, 4, initial = 1, step = 0.25), nsigma = slider(0,
+    4, initial = 0, step = 0.25))
+```
+
+```{r}
+manipulate(plot(seq(from = (mu - 6 * sigma), to = (mu + 6 * sigma), length.out = 1000),
+    pnorm(seq(from = (mu - 6 * sigma), to = (mu + 6 * sigma), length.out = 1000),
+        mean = mu, sd = sigma), type = "l", xlim = c(-20, 20), xlab = "x", ylab = "f(x)",
+    main = "Cumulative Probability"), mu = slider(-10, 10, initial = 0, step = 0.25),
+    sigma = slider(0.25, 10, initial = 1, step = 0.25))  # plots the cumulative distribution function
+```
+
+```{r}
+p <- pnorm(8, mean = 6, sd = 2) - pnorm(7, mean = 6, sd = 2)
+p
+```
+
+Calculates within 2 standard deviations of the mean:
+```{r}
+mu <- 0
+sigma <- 1
+p <- pnorm(mu + 2 * sigma, mean = mu, sd = sigma) - pnorm(mu - 2 * sigma, mean = mu,
+    sd = sigma)
+p
+```
+
+```{r}
+p <- pnorm(mu + 1 * sigma, mean = mu, sd = sigma) - pnorm(mu - 1 * sigma, mean = mu,
+    sd = sigma)
+p
+```
+
+Value of x below which a given proportion of the cumulative probability function falls; qnorm() to calculate confidence intervals:
+```{r}
+manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
+    dnorm(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000),
+        mean = mu, sd = sigma), type = "l", xlim = c(mu - 4 * sigma, mu + 4 *
+        sigma), xlab = "x", ylab = "f(x)", main = "Normal Probability Density Function") +
+    abline(v = mu, col = "blue") + abline(h = 0) + polygon(x = c(qnorm((1 -
+    CI)/2, mean = mu, sd = sigma), qnorm((1 - CI)/2, mean = mu, sd = sigma),
+    qnorm(1 - (1 - CI)/2, mean = mu, sd = sigma), qnorm(1 - (1 - CI)/2, mean = mu,
+        sd = sigma)), y = c(0, 1, 1, 0), border = "red"), mu = slider(-10, 10,
+    initial = 0, step = 0.25), sigma = slider(0.25, 10, initial = 1, step = 0.25),
+    CI = slider(0.5, 0.99, initial = 0.9, step = 0.01))
+```
+
+## Challenge 7
+Create a vector, v, containing n random numbers selected from a normal distribution with mean μ and standard deviation σ. Use 1000 for n, 3.5 for μ, and 4 for σ. HINT: Such a function exists! rnorm().
+Calculate the mean, variance, and standard deviation for your sample of random numbers.
+Plot a histogram of your random numbers.
+```{r}
+n <- 1000
+mu <- 3.5
+sigma <- 4
+v <- rnorm(n, mu, sigma)
+mean(v)
+```
+
+```{r}
+var(v)
+```
+
+```{r}
+sd(v)
+```
+
+```{r}
+hist(v, breaks = seq(from= -15, to = 20, by = 0.5), probability = TRUE)
+```
+
+A Q–Q plot is a graphical method for generally comparing two probability distributions.
+```{r}
+qqnorm(v, main = "Normal QQ plot random normal variables")
+qqline(v, col = "gray")
+```
+
+This is the same as doing the following:
+Step 1: Generate a sequence of probability points in the interval from 0 to 1 equivalent in length to vector v
+```{r}
+p <- ppoints(length(v))
+head(p)
+```
+
+```{r}
+tail(p)
+```
+Step 2: Calculate the theoretical quantiles for this set of probabilities based on a the distribution you want to compare to (in this case, the normal distribution)
+```{r}
+theoretical_q <- qnorm(ppoints(length(v)))
+```
+Step 3: Calculate the quantiles for your set of observed data for the same number of points
+```{r}
+observed_q <- quantile(v, ppoints(v))
+```
+Step 4: Plot these quantiles against one another
+```{r}
+plot(theoretical_q, observed_q, main = "Normal QQ plot random normal variables",
+    xlab = "Theoretical Quantiles", ylab = "Sample Quantiles")
+```
+
+## Challenge 8
+What happens if you simulate fewer observations in your vectors? Or if you simulate observations from a different distribution?
+**standard normal distribution**, where the mean is zero and the standard deviation is 1.
+The resultant values are referred to a **Z scores**, and they reflect the number of standard deviations an observation is from the mean.
+
+```{r}
+x <- rnorm(10000, mean = 5, sd = 8)  # simulate from a normal distribution with mean 5 and SD 8
+hist(x)
+```
+
+```{r}
+mean(x)
+```
+
+```{r}
+sd(x)
+```
+
+```{r}
+z <- (x - mean(x))/sd(x)  # standardized!
+hist(z)
+```
+
+```{r}
+mean(z)  # really close to zero
+```
+```{r}
+sd(z)  # really close to 1
+```
+
+Let’s imagine a population of 1 million zombies whose age at zombification is characterized by a normal distribution with a mean of 25 years and a standard deviation of 5 years. Below, we set up our population:
+```{r}
+set.seed(1)
+x <- rnorm(1e+06, 25, 5)
+hist(x, probability = TRUE)
+```
+
+```{r}
+mu <- mean(x)
+mu
+```
+
+```{r}
+sigma <- sqrt(sum((x - mean(x))^2)/length(x))
+```
+
+Suppose we now sample the zombie population by trapping sets of zombies and determining the mean age in each set. We sample without replacement from the original population for each set. Let’s do that 100 times with samples of size 5 and store these in a list.
+```{r}
+k <- 1000  # number of samples
+n <- 5  # size of each sample
+s <- NULL  # dummy variable to hold each sample
+for (i in 1:k) {
+    s[[i]] <- sample(x, size = n, replace = FALSE)
+}
+head(s)
+```
+How does the sampling distribution compare to the population distribution? The mean of the two is pretty close to the same! The sample mean - which is an average of the set of sample averages - is an unbiased estimator for the population mean.
+```{r}
+m <- NULL
+for (i in 1:k) {
+    m[i] <- mean(s[[i]])
+}
+mean(m)  # almost equal to...
+```
+
+```{r}
+mu
+```
+Again, this is the mean of the sampling distribution, which is simply the average of the means of each sample. This value should be really close to the population mean.
+
+The variance in the sampling distribution, i.e., of all possible means of samples of size n from a population, is σ2/n. The square root of this variance is the standard deviation of the sampling distribution, also referred to as the **standard error**.
+
+Thus, if the population variance σ2 (and thus the population standard deviation σ) is known, then the standard error can be calculated as square root of (σ2/n) or, equivalently, σ / (square root of the sample size).
+
+```{r}
+pop_se <- sqrt(sigma^2/n)
+pop_se  # SE estimated from population standard deviation
+```
+```{r}
+pop_se <- sigma/sqrt(n)
+pop_se  # SE estimated from population standard deviation
+```
+
+If the true population standard deviation is not known, the standard error can still be estimated from the standard deviation of any given sample. Thus, analogous to the formula we used when the true population standard deviation was known, the standard error calculated from a sample is simply the sample standard deviation / (square root of the sample size), or…
+```{r}
+stdev <- NULL
+for (i in 1:k) {
+    stdev[i] <- sd(s[[i]])
+}
+sem <- stdev/sqrt(n)  # a vector of SEs estimated from each sample 
+head(sem)
+```
+```{r}
+mean(sem)  # which is almost equal to...
+```
+```{r}
+pop_se
+```
+Thus, the standard error of the mean calculated from an individual sample can be used as an estimator for the standard deviation of the sampling distribution.
+
+Note that as our sample size increases, the standard error of the mean should decrease, as should the standard deviation in estimates of the population mean drawn from successive samples
+
+*Module 8 Complete*
